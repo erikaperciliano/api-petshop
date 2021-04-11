@@ -1,6 +1,7 @@
 const roteador = require('express').Router();
 const TabelaFornecedor = require('./TabelaFornecedor');
 const Fornecedor = require('./Fornecedor');
+const SerializadorFornecedor = require('../../Serializador').SerializadorFornecedor;
 
 roteador.post('/', async (req, res, next) => {
     try {
@@ -8,7 +9,11 @@ roteador.post('/', async (req, res, next) => {
         const fornecedor = new Fornecedor(dadosRecebidos);
     
         await fornecedor.criar();
-        res.send(JSON.stringify(fornecedor));
+
+        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'));
+        res.send(
+            serializador.serializar(fornecedor)
+        );
     }catch(erro){
         next(erro);
     }
@@ -16,7 +21,10 @@ roteador.post('/', async (req, res, next) => {
 
 roteador.get('/', async(req, res) =>{
     const resultados = await TabelaFornecedor.listar();
-    res.send(JSON.stringify(resultados));
+    const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'));
+    res.send(
+        serializador.serializar(resultados)
+    );
 });
 
 roteador.get('/:idFornecedor', async(req, res, next) => {
@@ -25,8 +33,12 @@ roteador.get('/:idFornecedor', async(req, res, next) => {
         const fornecedor = new Fornecedor({id : id});
     
         await fornecedor.carregar();
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type')
+        );
+
         res.send(
-            JSON.stringify(fornecedor)
+            serializador.serializar(fornecedor)
         )
     }catch(erro){
         next(erro);
@@ -44,8 +56,12 @@ roteador.put('/:idFornecedor', async(req, res, next) => {
         const fornecedor = new Fornecedor(dados);
         await fornecedor.atualizar();
         
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type')
+        );
+        
         res.send(
-            JSON.stringify(fornecedor)
+            serializador.serializar(fornecedor)
         )
     }catch(erro){
         next(erro);
@@ -61,7 +77,13 @@ roteador.delete('/:idFornecedor', async(req, res, next) => {
         await fornecedor.carregar();
         await fornecedor.remover();
         
-        res.send(JSON.stringify(fornecedor));
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type')
+        );
+        
+        res.send(
+            serializador.serializar(fornecedor)
+        )
 
     }catch(erro){
         next(erro);
