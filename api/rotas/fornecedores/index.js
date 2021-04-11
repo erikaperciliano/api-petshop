@@ -1,10 +1,8 @@
 const roteador = require('express').Router();
 const TabelaFornecedor = require('./TabelaFornecedor');
 const Fornecedor = require('./Fornecedor');
-const NaoEncontrado = require('../../erros/NaoEncontrados');
 
-
-roteador.post('/', async (req, res) => {
+roteador.post('/', async (req, res, next) => {
     try {
         const dadosRecebidos = req.body;
         const fornecedor = new Fornecedor(dadosRecebidos);
@@ -12,10 +10,7 @@ roteador.post('/', async (req, res) => {
         await fornecedor.criar();
         res.send(JSON.stringify(fornecedor));
     }catch(erro){
-        res.status(400);
-        res.send({
-            mesagem: erro.message
-        });
+        next(erro);
     }
 });
 
@@ -24,7 +19,7 @@ roteador.get('/', async(req, res) =>{
     res.send(JSON.stringify(resultados));
 });
 
-roteador.get('/:idFornecedor', async(req, res) =>{
+roteador.get('/:idFornecedor', async(req, res, next) => {
     try {
         const id = req.params.idFornecedor;
         const fornecedor = new Fornecedor({id : id});
@@ -34,14 +29,11 @@ roteador.get('/:idFornecedor', async(req, res) =>{
             JSON.stringify(fornecedor)
         )
     }catch(erro){
-        res.status(404);
-        res.send(JSON.stringify({
-            mensagem: erro.message
-        }));
+        next(erro);
     }
 });
 
-roteador.put('/:idFornecedor', async(req, res, proximo) =>{
+roteador.put('/:idFornecedor', async(req, res, next) => {
     try {
         const id = req.params.idFornecedor;
         const dadosRecebidos = req.body;
@@ -56,11 +48,12 @@ roteador.put('/:idFornecedor', async(req, res, proximo) =>{
             JSON.stringify(fornecedor)
         )
     }catch(erro){
-        proximo(erro);
+        next(erro);
+        
     }
 });
 
-roteador.delete('/:idFornecedor', async(req, res) => {
+roteador.delete('/:idFornecedor', async(req, res, next) => {
     try {
         const id = req.params.idFornecedor;
         const fornecedor = new Fornecedor({id: id});
@@ -71,10 +64,7 @@ roteador.delete('/:idFornecedor', async(req, res) => {
         res.send(JSON.stringify(fornecedor));
 
     }catch(erro){
-        res.status(404);
-        res.send(JSON.stringify({
-            mensagem: erro.message
-        }));
+        next(erro);
     }
 });
 
