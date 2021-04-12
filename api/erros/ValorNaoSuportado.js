@@ -3,7 +3,7 @@ class ValorNaoSuportado extends Error {
         super(`O tipo de conteúdo ${contentType} não é suportado!`);
 
         this.name =  'ValorNaoSuportado';
-        this.Error = 3;
+        this.idError = 3;
     }
 }
 
