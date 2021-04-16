@@ -1,4 +1,5 @@
-const Modelo = require('./ModeloTabelaProduto')
+const Modelo = require('./ModeloTabelaProduto');
+const instancia = require('../../../banco-de-dados');
 
 module.exports = {
 
@@ -30,6 +31,31 @@ module.exports = {
 
         return encontrado;
     },   
+
+    atualizar(dadosDoProduto, dadosParaAtualizar){
+        return Modelo.update(
+            dadosParaAtualizar,
+            {
+                where: dadosDoProduto
+            }
+        )
+    },
+
+    subtrair(idProduto, idFornecedor, campo, quantidade){
+        return instancia.transaction(async transacao => {
+            const produto = await Modelo.findOne({
+                where: {
+                    id: idProduto,
+                    fornecedor: idFornecedor
+                }
+            })
+
+            produto[campo] = quantidade;
+            await produto.save(); // pede para o sequelize salvar esse obj no banco
+
+            return produto;
+        })
+    },
 
     remover(idProduto, idFornecedor){
         return Modelo.destroy({
