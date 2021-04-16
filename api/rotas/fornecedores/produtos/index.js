@@ -58,6 +58,45 @@ roteador.get('/:id', async (req, res, next) => {
     }catch(erro){
         next(erro);
     }
+});
+
+roteador.put('/:id', async (req, res, next )=> {
+    
+    try {
+        const dados = Object.assign(
+        {},
+        req.body,
+        {
+            id: req.params.id,
+            fornecedor: req.fornecedor.id
+            }
+        )
+
+            const produto = new Produto(dados);
+            await produto.atualizar();
+            res.status(204);
+            res.send('Dados atualizados com sucesso!');
+    }catch(erro){
+        next(erro);
+    }
+});
+
+roteador.post('/:id/diminuir-estoque', async (req, res, next) => {
+    try {
+        const produto = new Produto({
+            id: req.params.id,
+            fornecedor: req.fornecedor.id
+        })
+
+        await produto.carregar();
+        produto.estoque = produto.estoque - req.body.quantidade;
+        await produto.diminuirEstoque();
+        res.status(204);
+        res.end();
+
+    }catch(erro){
+        next(erro);
+    }
 })
 
 roteador.delete('/:id', async (req, res) => {
