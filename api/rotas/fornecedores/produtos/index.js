@@ -73,6 +73,27 @@ roteador.get('/:id', async (req, res, next) => {
     }
 });
 
+//pega apenas os cabeçalhos
+roteador.head('/:id', async(req, res) => {
+    try {
+        const dados = {
+        id: req.params.id,
+        fornecedor: req.fornecedor.id
+        }
+
+        const produto = new Produto(dados);
+        await produto.carregar();
+        res.set('ETag', produto.versao);
+        const timestamp = (new Date(produto.dataAtualizacao)).getTime();
+        res.set('Last-Modified', timestamp);
+        
+        res.status(200);
+        res.end();
+    }catch(erro){
+        next(erro);
+    }
+})
+
 roteador.put('/:id', async (req, res, next )=> {
     
     try {
