@@ -18,7 +18,10 @@ roteador.post('/', async (req, res, next) => {
     
         await fornecedor.criar();
 
-        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'));
+        const serializador = new SerializadorFornecedor(
+            res.getHeader('Content-Type'),
+            ['empresa']
+        );
         res.send(
             serializador.serializar(fornecedor)
         );
@@ -29,7 +32,10 @@ roteador.post('/', async (req, res, next) => {
 
 roteador.get('/', async(req, res) =>{
     const resultados = await TabelaFornecedor.listar();
-    const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'));
+    const serializador = new SerializadorFornecedor(
+        res.getHeader('Content-Type'),
+        ['empresa']
+    );
     res.send(
         serializador.serializar(resultados)
     );
@@ -50,7 +56,7 @@ roteador.get('/:idFornecedor', async(req, res, next) => {
         await fornecedor.carregar();
         const serializador = new SerializadorFornecedor(
             res.getHeader('Content-Type'),
-            ['email', 'dataCriacao', 'dataAtualizacao', 'versao']
+            ['email', 'empresa', 'dataCriacao', 'dataAtualizacao', 'versao']
         );
 
         res.send(
