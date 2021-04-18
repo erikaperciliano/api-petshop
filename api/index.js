@@ -27,6 +27,11 @@ app.use((req, res, next) => {
     next();
 })
 
+app.use((req, res, next) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    next();
+})
+
 const roteador = require('./rotas/fornecedores');
 const ValorNaoSuportado = require('./erros/ValorNaoSuportado');
 
